@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="static/css/bootstrap.min.css">
+		<link rel="stylesheet" href="static/font-awesome-4.7.0/css/font-awesome.min.css">
+	    <title>Food Visualization</title>
+	</head>
+
+	<body>
+		<!-- <div class="container-fluid" style = "padding-top : 25px; width : 70%">
+			<ul class="nav nav-pills nav-justified">
+				<li class="nav-item	"><a class="nav-link active" href="#">Search Engine</a></li>
+				<li class="nav-item"><a class="nav-link" href="#">Sentiment Analysis</a></li>
+			</ul>
+		</div> -->
+
+	    <div class="container center" style="padding : 25px; width : 50%">
+	    	<h1 class="text-center">Food Visualization Engine</h1>
+	        <div class="row" style="margin-top: 25px">
+				<div class="input-group mb-3">
+					<input type="text" class="form-control" placeholder="Search...">
+					<div class="input-group-append">
+						<button class="btn btn-primary" type="button">Search</button>
+					</div>
+				</div>
+	        </div>
+	    </div>
+    
+    <div id="trend" class="text-center fw-bold" style="font-size: 25px; color:rgb(235, 23, 23)"></div>
+
+    <div class="col-sm-4" style="margin-left: 25px; margin-top: 25px">
+    <canvas id="percentageChart" style="height: 70%; width: 70%"></canvas>
+
+		<script src="static/js/jquery-3.6.0.min.js"></script>
+		<script src="static/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
+    <script>$('.btn-primary').click(function(){
+                  $.ajax({
+                    type : 'GET',
+                    url : '/ajax',
+                    data : {'query': $('input').val()},
+                    success : (dataSet) => drawChart($('input').val(), dataSet)
+                  });
+                })
+      
+      var percentageChart;
+      var drawChart = function (query, dataSet) {
+       
+        var value = dataSet.toFixed(2);
+        var data = {
+          labels: [
+            "Percentage of '" + query + "'' appearance",
+            ""
+          ],
+          datasets: [
+            {
+              data: [value, 100-value],
+              backgroundColor: [
+                "#FF6384",
+                "#AAAAAA"
+              ],
+              hoverBackgroundColor: [
+                "#FF0000",
+                "#AAAAAA"
+              ],
+              hoverBorderColor: [
+                "#FF6384",
+                "#ffffff"
+              ]
+            }]
+        };
+        
+        if(percentageChart){
+          percentageChart.destroy();
+        }
+        
+        percentageChart = new Chart(document.getElementById('percentageChart'), {
+          type: 'pie',
+          data: data,
+          options: {
+            responsive: true,
+            legend: {
+              display: false
+            },
+            title: {
+                display: true,
+                text: String(value) + "% of Social Shares"
+            },
+            tooltips: {
+              filter: function(item, data) {
+                var label = data.labels[item.index];
+                if (label) return item;
+              }
+            }
+          }
+        });
+
+        if(query !== "")
+          document.getElementById("trend").innerHTML = '"' + query + '"' + ' trends';
+
+      }
+
+    </script>
+    </div>
+	</body>
+</html>

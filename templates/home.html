@@ -10,13 +10,7 @@
 	</head>
 
 	<body>
-		<!-- <div class="container-fluid" style = "padding-top : 25px; width : 70%">
-			<ul class="nav nav-pills nav-justified">
-				<li class="nav-item	"><a class="nav-link active" href="#">Search Engine</a></li>
-				<li class="nav-item"><a class="nav-link" href="#">Sentiment Analysis</a></li>
-			</ul>
-		</div> -->
-
+    
 	    <div class="container center" style="padding : 25px; width : 50%">
 	    	<h1 class="text-center">Food Visualization Engine</h1>
 	        <div class="row" style="margin-top: 25px">
@@ -31,8 +25,11 @@
     
     <div id="trend" class="text-center fw-bold" style="font-size: 25px; color:rgb(235, 23, 23)"></div>
 
-    <div class="col-sm-4" style="margin-left: 25px; margin-top: 25px">
-    <canvas id="percentageChart" style="height: 70%; width: 70%"></canvas>
+    <div class="col-sm-4" style="margin-left: 25px; margin-top: 25px; display: flex;">
+      <canvas id="socialChart" style="height: 70%; width: 70%"></canvas>
+      <canvas id="recipeChart" style="height: 70%; width: 70%"></canvas>
+      <canvas id="packagedChart" style="height: 70%; width: 70%"></canvas>
+    </div>
 
 		<script src="static/js/jquery-3.6.0.min.js"></script>
 		<script src="static/js/bootstrap.min.js"></script>
@@ -46,10 +43,13 @@
                   });
                 })
       
-      var percentageChart;
-      var drawChart = function (query, dataSet) {
+      var socialChart;
+      var recipeChart;
+      var packagedChart;
+
+      function drawPieChart (canvas, query, value, title) {
        
-        var value = dataSet.toFixed(2);
+        var value = value.toFixed(2);
         var data = {
           labels: [
             "Percentage of '" + query + "'' appearance",
@@ -73,11 +73,19 @@
             }]
         };
         
-        if(percentageChart){
-          percentageChart.destroy();
+        if(canvas === "socialChart" && socialChart){
+          socialChart.destroy();
+        }
+
+        if(canvas === "recipeChart" && recipeChart){
+          recipeChart.destroy();
+        }
+
+        if(canvas === "packagedChart" && packagedChart){
+          packagedChart.destroy();
         }
         
-        percentageChart = new Chart(document.getElementById('percentageChart'), {
+        return new Chart(document.getElementById(canvas), {
           type: 'pie',
           data: data,
           options: {
@@ -87,7 +95,7 @@
             },
             title: {
                 display: true,
-                text: String(value) + "% of Social Shares"
+                text: String(value) + "% of " + title
             },
             tooltips: {
               filter: function(item, data) {
@@ -98,9 +106,15 @@
           }
         });
 
+      }
+
+      var drawChart = function(query, dataSet){
         if(query !== "")
           document.getElementById("trend").innerHTML = '"' + query + '"' + ' trends';
-
+        
+        socialChart = drawPieChart("socialChart", query, dataSet[0], "Social Shares");
+        recipeChart = drawPieChart("recipeChart", query, dataSet[1], "Recipes");
+        packagedChart = drawPieChart("packagedChart", query, dataSet[2], "Packaged Foods");
       }
 
     </script>

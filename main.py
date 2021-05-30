@@ -23,11 +23,18 @@ def ajax():
 
     print(request)
 
-    df = Data.get_data('data\\instagram.json')
     term = request.args.get('query')
-    percentage = Percentage.percentage(term, df)
 
-    response = percentage
+    insta = Data.get_data('data\\instagram.json')
+    insta_percent = Percentage.percentage(term, insta, 'text')
+
+    recipe = Data.get_data('data\\recipe.json')
+    recipe_percent = Percentage.percentage(term, recipe, 'text')
+
+    packaged = Data.get_data('data\\packaged.json')
+    packaged_percent = Percentage.percentage(term, packaged, 'Name')
+
+    response = [insta_percent, recipe_percent, packaged_percent]
     print(response)
     return jsonify(response)
 

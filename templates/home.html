@@ -31,6 +31,13 @@
       <canvas id="packagedChart" style="height: 70%; width: 70%"></canvas>
     </div>
 
+    <div class="container">
+      <br />
+      <canvas id="lineChartSocial"></canvas>
+      <br />
+      <canvas id="lineChartRecipe"></canvas>
+  </div>
+
 		<script src="static/js/jquery-3.6.0.min.js"></script>
 		<script src="static/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
@@ -47,9 +54,11 @@
       var recipeChart;
       var packagedChart;
 
-      function drawPieChart (canvas, query, value, title) {
-       
-        var value = value.toFixed(2);
+      var lineChartSocial;
+      var lineChartRecipe;
+
+      function drawPieChart (canvas, query, percent, title) { 
+        var value = percent.toFixed(2);
         var data = {
           labels: [
             "Percentage of '" + query + "'' appearance",
@@ -108,13 +117,72 @@
 
       }
 
+      function drawLineChart(canvas, query, frequency, title){
+        console.log(frequency[0]['date']);
+
+        if(canvas === "lineChartSocial" && lineChartSocial){
+          lineChartSocial.destroy();
+        }
+
+        if(canvas === "lineChartRecipe" && lineChartRecipe){
+          lineChartRecipe.destroy();
+        }
+
+        var counts = [];
+        var dates = [];
+
+        for(var i=0; i<frequency.length; i++){
+          counts.push(frequency[i]['count']);
+          dates.push(frequency[i]['date']);
+        }
+
+        return new Chart(document.getElementById(canvas), {
+            type: 'line',
+            options: {
+              responsive: true,
+              scales: {
+                xAxes: {
+                    type: 'time',
+                    time: {
+                      parser: 'ddd, DD MMM YYYY HH:mm:ss z',
+                      unit: 'day'
+                    }
+                },
+                yAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: 'Number of Appeareances'
+                  }
+                }]
+              },
+              title: {
+                display: true,
+                fontSize: 20,
+                text: 'Interest Over Time from ' + title
+              }
+
+            },
+            data: {
+                labels: dates,
+                datasets: [{                  
+                  label: title,
+                  data: counts,
+                  borderColor: 'rgb(75, 192, 192)',
+                }]
+            }            
+        });
+      }
+
       var drawChart = function(query, dataSet){
         if(query !== "")
           document.getElementById("trend").innerHTML = '"' + query + '"' + ' trends';
         
-        socialChart = drawPieChart("socialChart", query, dataSet[0], "Social Shares");
-        recipeChart = drawPieChart("recipeChart", query, dataSet[1], "Recipes");
-        packagedChart = drawPieChart("packagedChart", query, dataSet[2], "Packaged Foods");
+        socialChart = drawPieChart("socialChart", query, dataSet['percentage'][0], "Social Shares");
+        recipeChart = drawPieChart("recipeChart", query, dataSet['percentage'][1], "Recipes");
+        packagedChart = drawPieChart("packagedChart", query, dataSet['percentage'][2], "Packaged Foods");
+
+        lineChartSocial = drawLineChart("lineChartSocial", query, dataSet['interest'][0], "Social Shares");
+        lineChartRecipe = drawLineChart("lineChartRecipe", query, dataSet['interest'][1], "Recipes");
       }
 
     </script>

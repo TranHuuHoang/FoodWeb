@@ -4,6 +4,7 @@ import requests
 import Percentage
 import Data
 import Interest_by_date
+import Meal_of_day
 
 
 app = Flask(__name__)
@@ -38,8 +39,13 @@ def ajax():
     line_insta = Interest_by_date.group_by_date(term, insta)
     line_recipe = Interest_by_date.group_by_date(term, recipe)
 
+    meal = Data.get_data('data\\meal.json')
+    meal_of_day = Meal_of_day.split_meal(term, meal)
+    # print(meal_of_day)
+
     response = {"percentage": [insta_percent, recipe_percent, packaged_percent],
-                "interest": [line_insta, line_recipe]}
+                "interest": [line_insta, line_recipe],
+                "meal": meal_of_day}
 
     return jsonify(response)
 

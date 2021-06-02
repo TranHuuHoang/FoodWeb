@@ -36,7 +36,13 @@
       <canvas id="lineChartSocial"></canvas>
       <br />
       <canvas id="lineChartRecipe"></canvas>
-  </div>
+    </div>
+
+    <div class="container">
+      <br />
+      <br />
+      <canvas id="radarChartMeal"></canvas>
+    </div>
 
 		<script src="static/js/jquery-3.6.0.min.js"></script>
 		<script src="static/js/bootstrap.min.js"></script>
@@ -56,6 +62,8 @@
 
       var lineChartSocial;
       var lineChartRecipe;
+
+      var radarChartMeal;
 
       function drawPieChart (canvas, query, percent, title) { 
         var value = percent.toFixed(2);
@@ -118,7 +126,6 @@
       }
 
       function drawLineChart(canvas, query, frequency, title){
-        console.log(frequency[0]['date']);
 
         if(canvas === "lineChartSocial" && lineChartSocial){
           lineChartSocial.destroy();
@@ -173,6 +180,53 @@
         });
       }
 
+      function drawRadarChart(canvas, query, frequency, title){
+        if(canvas === "radarChartMeal" && radarChartMeal){
+          radarChartMeal.destroy();
+        }
+
+        var meal = ['Breakfast', 'Brunch', 'Lunch', 'Snack', 'Dinner', 'Supper']
+        var counts = [];
+
+        for(var i=0; i<6; i++){
+          counts.push(frequency[meal[i]]);
+        }
+
+        var data = {
+          labels: meal,
+          datasets: [{
+            data: counts,
+            fill: true,
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgb(255, 99, 132)',
+            pointBackgroundColor: 'rgb(255, 99, 132)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(255, 99, 132)'
+          }]
+        };
+        return new Chart(document.getElementById(canvas), {
+          type: 'radar',
+          data: data,
+          options: {
+            legend: {
+                display: false,
+            },
+            elements: {
+              line: {
+                borderWidth: 3
+              }
+            },
+            title: {
+                display: true,
+                fontSize: 20,
+                text: title
+              }
+          }
+        });
+
+      }
+
       var drawChart = function(query, dataSet){
         if(query !== "")
           document.getElementById("trend").innerHTML = '"' + query + '"' + ' trends';
@@ -183,6 +237,8 @@
 
         lineChartSocial = drawLineChart("lineChartSocial", query, dataSet['interest'][0], "Social Shares");
         lineChartRecipe = drawLineChart("lineChartRecipe", query, dataSet['interest'][1], "Recipes");
+
+        radarChartMeal = drawRadarChart("radarChartMeal", query, dataSet['meal'], "Meal of the Day");
       }
 
     </script>

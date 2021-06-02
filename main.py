@@ -27,19 +27,19 @@ def ajax():
 
     term = request.args.get('query')
 
-    insta = Data.get_data('data\\instagram.json')
+    insta = Data.get_data('static/data/instagram.json')
     insta_percent = Percentage.percentage(term, insta, 'text')
 
-    recipe = Data.get_data('data\\recipe.json')
+    recipe = Data.get_data('static/data/recipe.json')
     recipe_percent = Percentage.percentage(term, recipe, 'text')
 
-    packaged = Data.get_data('data\\packaged.json')
+    packaged = Data.get_data('static/data/packaged.json')
     packaged_percent = Percentage.percentage(term, packaged, 'Name')
 
     line_insta = Interest_by_date.group_by_date(term, insta)
     line_recipe = Interest_by_date.group_by_date(term, recipe)
 
-    meal = Data.get_data('data\\meal.json')
+    meal = Data.get_data('static/data/meal.json')
     meal_of_day = Meal_of_day.split_meal(term, meal)
     # print(meal_of_day)
 

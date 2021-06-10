@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = 'data/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SECRET_KEY'] = os.urandom(12)
 
 result = None
 
@@ -103,5 +104,5 @@ def upload_file():
     return render_template('upload.html', message=message, error=error)
 
 if __name__ == "__main__":
-    app.secret_key = os.urandom(12)
+    # app.secret_key = os.urandom(12)
     app.run(debug=True)

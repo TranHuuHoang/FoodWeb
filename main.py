@@ -75,8 +75,6 @@ def ajax():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
 
     message = None
     error = None

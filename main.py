@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, jsonify, request, redirect
+from flask import Flask, render_template, url_for, jsonify, request, redirect, session
 from werkzeug.utils import secure_filename
 
 import os
@@ -22,12 +22,11 @@ def index():
 
 @app.route("/home")
 def home():
-    return render_template("home.html")
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    else:
+        return render_template("home.html")
     
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
 # Route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -39,6 +38,7 @@ def login():
         if request.form['username'] != username or request.form['password'] != password:
             error = 'Invalid Credentials. Please try again.'
         else:
+            session['logged_in'] = True
             return redirect(url_for('home'))
     return render_template('login.html', error=error)
 
@@ -74,6 +74,9 @@ def ajax():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     message = None
     error = None
     if request.method == 'POST':
@@ -100,4 +103,5 @@ def upload_file():
     return render_template('upload.html', message=message, error=error)
 
 if __name__ == "__main__":
+    app.secret_key = os.urandom(12)
     app.run(debug=True)
